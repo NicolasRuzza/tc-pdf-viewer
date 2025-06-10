@@ -1,0 +1,20 @@
+footer {
+    background-color: #003366;
+    color: #ffffff;
+    text-align: center;
+    height: 8vh;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer .footer-info p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}

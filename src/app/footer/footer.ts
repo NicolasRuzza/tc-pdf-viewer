@@ -7,5 +7,8 @@ import { Component } from '@angular/core';
   styleUrl: './footer.css'
 })
 export class Footer {
-
+    emailContato : string = "contato@tcsolucoes.com";
+    telContato   : string = "(XX) XXXX-XXXX";
+    emailTrabalhe: string = "trabalheconosco@tcsolucoes.com";
+    anoAtual     : number = new Date().getFullYear();
 }

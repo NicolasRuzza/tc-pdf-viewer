@@ -1,10 +1,9 @@
 import { Component, OnInit, HostListener } from "@angular/core";
 import { getDocument, GlobalWorkerOptions, PDFDocumentProxy } from "pdfjs-dist";
-import { Header } from "../header/header";
 
 @Component({ // é stanalone por default
   selector: 'app-pdf2image-viewer',
-  imports: [Header],
+  imports: [],
   templateUrl: './pdf2image-viewer.html',
   styleUrl: './pdf2image-viewer.css'
 })
