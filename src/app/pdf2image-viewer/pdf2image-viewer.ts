@@ -1,6 +1,8 @@
-import { Component, OnInit, HostListener } from "@angular/core";
+import { Component, OnInit, HostListener, Inject } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { getDocument, GlobalWorkerOptions, PDFDocumentProxy } from "pdfjs-dist";
 import { PDFPageProxy } from "pdfjs-dist/types/src/display/api";
+import { ApiPdfRequestService } from "../services/api-pdfrequest";
 
 @Component({
   selector: "app-pdf2image-viewer",
@@ -8,10 +10,44 @@ import { PDFPageProxy } from "pdfjs-dist/types/src/display/api";
   templateUrl: "./pdf2image-viewer.html",
   styleUrl: "./pdf2image-viewer.css"
 })
-export class Pdf2imageViewer implements OnInit {
+export class Pdf2ImageViewer implements OnInit {
+	constructor(
+		private route: ActivatedRoute,
+		private pdfService: ApiPdfRequestService
+	) {}
+
     ngOnInit(): void {
-        GlobalWorkerOptions.workerSrc = "assets/pdf-js/pdf.worker.min.mjs";
-        this.renderPDF("assets/armando-pinto.pdf");
+		GlobalWorkerOptions.workerSrc = "assets/pdf-js/pdf.worker.min.mjs";
+
+		const id = this.route.snapshot.paramMap.get("id");
+		if (!id) {
+			console.error("ID do PDF não foi informado na rota.");
+			return;
+		}
+
+		this.pdfService.getPdfById(id).subscribe({
+			next: (res) => {
+				const blob = this.base64ToBlob(res.content, res.mimeType);
+				const blobUrl = URL.createObjectURL(blob);
+				this.renderPDF(blobUrl);
+			},
+			error: (err) => {
+				console.error("Erro ao buscar PDF:", err);
+			}
+		});
+    }
+
+	private base64ToBlob(base64: string, mime: string): Blob {
+        const byteCharacters = atob(base64);
+        const byteArrays = [];
+
+        for (let i = 0; i < byteCharacters.length; i += 512) {
+            const slice = byteCharacters.slice(i, i + 512);
+            const byteNumbers = Array.from(slice).map(char => char.charCodeAt(0));
+            byteArrays.push(new Uint8Array(byteNumbers));
+        }
+
+        return new Blob(byteArrays, { type: mime });
     }
 
 	@HostListener("document:visibilitychange")

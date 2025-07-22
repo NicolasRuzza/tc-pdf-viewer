@@ -1,15 +1,15 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
 import { Header } from "./header/header";
 import { Footer } from "./footer/footer";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   imports: [RouterOutlet, Header, Footer],
-  templateUrl: './app.html',
-  styleUrl: './app.css',
+  templateUrl: "./app.html",
+  styleUrl: "./app.css",
   standalone: true
 })
 export class App {
-  protected title = 'tc-pdf-viewer';
+  protected title = "tc-pdf-viewer";
 }
