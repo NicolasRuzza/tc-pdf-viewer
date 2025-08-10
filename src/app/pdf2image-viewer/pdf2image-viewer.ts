@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Inject } from "@angular/core";
+import { Component, OnInit, HostListener, Inject, ViewEncapsulation } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { getDocument, GlobalWorkerOptions, PDFDocumentProxy } from "pdfjs-dist";
 import { PDFPageProxy } from "pdfjs-dist/types/src/display/api";
@@ -8,7 +8,7 @@ import { ApiPdfRequestService } from "../services/api-pdfrequest";
   selector: "app-pdf2image-viewer",
   imports: [],
   templateUrl: "./pdf2image-viewer.html",
-  styleUrl: "./pdf2image-viewer.css"
+  styleUrls: ["./pdf2image-viewer.css"],
 })
 export class Pdf2ImageViewer implements OnInit {
 	constructor(
@@ -19,23 +19,55 @@ export class Pdf2ImageViewer implements OnInit {
     ngOnInit(): void {
 		GlobalWorkerOptions.workerSrc = "assets/pdf-js/pdf.worker.min.mjs";
 
+		const type = this.route.snapshot.paramMap.get("type");
 		const id = this.route.snapshot.paramMap.get("id");
-		if (!id) {
-			console.error("ID do PDF não foi informado na rota.");
+
+		if (!id || !type) {
+			console.error("Parâmetros 'id' ou 'type' ausentes.");
 			return;
 		}
 
+		switch(type) {
+			case "pdf":
+				this.renderSinglePdf(id);
+				break;
+			case "folder":
+				this.renderMultiplePdfsFromFolder(id);
+				break;
+			default:
+				console.error("Tipo inválido. Esperado: 'pdf' ou 'folder'.");
+				break;
+		}
+    }
+
+	private renderSinglePdf(id: string): void {
 		this.pdfService.getPdfById(id).subscribe({
 			next: (res) => {
 				const blob = this.base64ToBlob(res.content, res.mimeType);
 				const blobUrl = URL.createObjectURL(blob);
-				this.renderPDF(blobUrl);
+				this.renderPDF(blobUrl, id);
 			},
 			error: (err) => {
 				console.error("Erro ao buscar PDF:", err);
 			}
 		});
-    }
+	}
+
+	private renderMultiplePdfsFromFolder(folderId: string): void {
+		this.pdfService.getItemsInFolder(folderId).subscribe({
+			next: (pdfs) => {
+				for (const pdf of pdfs) {
+					if (pdf.id) {
+						console.log("Renderizando PDF:", pdf.name);
+						this.renderSinglePdf(pdf.id);
+					}
+				}
+			},
+			error: (err) => {
+				console.error("Erro ao listar PDFs da pasta:", err);
+			}
+		});
+	}
 
 	private base64ToBlob(base64: string, mime: string): Blob {
         const byteCharacters = atob(base64);
@@ -58,9 +90,16 @@ export class Pdf2ImageViewer implements OnInit {
 		}
   	}
 
-	private renderPDF(pdfPath: string): void {
-		const container: HTMLElement | null = document.getElementById("img-presenter");
+	private renderPDF(pdfPath: string, pdfId: string): void {
+		const container: HTMLElement | null = document.getElementById("directory");
 		if (!container) return;
+
+		// Cria uma nova div para este PDF
+		const pdfWrapper = document.createElement("div");
+		pdfWrapper.id = `pdf-${pdfId}`;
+		pdfWrapper.classList.add("img-presenter");
+
+		container.appendChild(pdfWrapper);
 
 		getDocument(pdfPath).promise.then((pdf: PDFDocumentProxy) => {
 			for (let i = 1; i <= pdf.numPages; i++) {
@@ -77,7 +116,7 @@ export class Pdf2ImageViewer implements OnInit {
 						this.addWatermark(ctx);
 						const img = new Image();
 						img.src = canvas.toDataURL();
-						container.appendChild(img);
+						pdfWrapper.appendChild(img);
 					});
 				});
 			}
