@@ -2,6 +2,10 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.1.
 
+## Docker container
+
+sudo docker run -d --name tc-pdf-viewer -p 8080:80 tc-pdf-viewer:latest
+
 ## Development server
 
 To start a local development server, run:
