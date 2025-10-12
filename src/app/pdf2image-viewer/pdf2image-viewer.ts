@@ -82,13 +82,13 @@ export class Pdf2ImageViewer implements OnInit {
         return new Blob(byteArrays, { type: mime });
     }
 
-	@HostListener("document:visibilitychange")
-	onVisibilityChange(): void {
-		if (document.hidden) {
-			const container: HTMLElement | null = document.getElementById("img-presenter");
-			if (container) container.innerHTML = "";
-		}
-  	}
+	// @HostListener("document:visibilitychange")
+	// onVisibilityChange(): void {
+	// 	if (document.hidden) {
+	// 		const container: HTMLElement | null = document.getElementById("img-presenter");
+	// 		if (container) container.innerHTML = "";
+	// 	}
+  	// }
 
 	private renderPDF(pdfPath: string, pdfId: string): void {
 		const container: HTMLElement | null = document.getElementById("directory");
