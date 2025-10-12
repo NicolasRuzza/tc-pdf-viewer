@@ -4,7 +4,9 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## Docker container
 
+```bash
 sudo docker run -d --name tc-pdf-viewer -p 8080:80 tc-pdf-viewer:latest
+```
 
 ## Development server
 
