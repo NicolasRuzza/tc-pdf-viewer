@@ -6,7 +6,7 @@ import { PdfInfo } from "../models/PdfInfo";
 
 @Injectable({ providedIn: "root" })
 export class ApiPdfRequestService {
-    private baseUrl = "http://localhost:3000/";
+    private baseUrl = "";
 
     constructor(private http: HttpClient) {}
 

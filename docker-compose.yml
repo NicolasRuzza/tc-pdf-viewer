@@ -1,6 +1,12 @@
 services:
-  angular-app:
+  frontend:
     build: .
     ports:
       - "8080:80"
     restart: always
+    networks:
+      - minha-rede-app
+
+networks:
+  minha-rede-app:
+    external: true
